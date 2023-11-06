@@ -1,14 +1,19 @@
 import { Avatar, Grid } from '@mui/material';
 import Box from '@mui/material/Box';
 
-export const MessageLeft = () => {
+interface Props {
+  message: string;
+  name: string;
+}
+
+export const MessageLeft = (props: Props) => {
   return (
     <Box sx={{ marginBottom: 2 }}>
       <Grid container spacing={1}>
-        <Grid item xs={2}>
-          <Avatar alt="Remy Sharp"></Avatar>
+        <Grid item xs={1}>
+          <Avatar alt={props.name}>{props.name.charAt(0)}</Avatar>
         </Grid>
-        <Grid item xs={10}>
+        <Grid item xs={11}>
           <Box
             sx={{
               backgroundColor: '#4870df',
@@ -19,11 +24,7 @@ export const MessageLeft = () => {
                 '0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)',
             }}
           >
-            A good example of a paragraph contains a topic sentence, details and
-            a conclusion. 'There are many different kinds of animals that live
-            in China. Tigers and leopards are animals that live in China's
-            forests in the north. In the jungles, monkeys swing in the trees and
-            elephants walk through the brush.
+            {props.message}
           </Box>
         </Grid>
       </Grid>

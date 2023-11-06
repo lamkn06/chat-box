@@ -1,32 +1,59 @@
 import SendIcon from '@mui/icons-material/Send';
-import { Button, Divider, IconButton, InputBase, Paper } from '@mui/material';
+import { Divider, IconButton, InputBase, Paper } from '@mui/material';
 import Container from '@mui/material/Container';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { MessageLeft } from '../Message/MessageLeft';
 import { MessageRight } from '../Message/MessageRight';
 
-export const Conversation = () => {
+interface Props {
+  uuid: string;
+  name: string;
+}
+
+export const Conversation = (props: Props) => {
   const [messages, setMessages] = useState([]);
   const [messageInput, setMessageInput] = useState('');
-  const socket = new WebSocket('ws://localhost:3001');
 
   useEffect(() => {
-    socket.onopen = () => {
+    const messages = localStorage.getItem('messages');
+    if (!messages) {
+      return;
+    }
+    setMessages(JSON.parse(messages as string));
+  }, []);
+
+  const ws = useRef(null) as any;
+
+  useEffect(() => {
+    ws.current = new WebSocket('ws://localhost:8080');
+
+    ws.current.onopen = () => {
       console.log('WebSocket connection established.');
     };
 
-    socket.onmessage = (event) => {
-      console.log(event.data);
+    ws.current.onmessage = (event: { data: string }) => {
+      const receivedMessage = JSON.parse(event.data);
+      const newMessages = messages.concat(receivedMessage);
+      setMessages(newMessages);
+      localStorage.setItem('messages', JSON.stringify(newMessages));
     };
 
     return () => {
-      socket.close();
+      ws.current.close();
     };
-  }, []);
+  }, [messages]);
 
-  const sendMessage = () => { 
-    socket.send(JSON.stringify('hjh'));
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    ws.current.send(
+      JSON.stringify({
+        message: messageInput,
+        uuid: props.uuid,
+        name: props.name,
+      }),
+    );
+    setMessageInput('');
   };
 
   return (
@@ -38,8 +65,29 @@ export const Conversation = () => {
           marginBottom: 2,
         }}
       >
-        <MessageLeft />
-        <MessageRight />
+        {messages.length > 0 && (
+          <>
+            {messages.map((message: any) => {
+              if (message.uuid === props.uuid) {
+                return (
+                  <MessageRight
+                    message={message.message}
+                    name={message.name}
+                    key={message.timestamp}
+                  />
+                );
+              } else {
+                return (
+                  <MessageLeft
+                    message={message.message}
+                    name={message.name}
+                    key={message.timestamp}
+                  />
+                );
+              }
+            })}
+          </>
+        )}
       </Paper>
       <Paper
         component="form"
@@ -48,14 +96,22 @@ export const Conversation = () => {
           display: 'flex',
           alignItems: 'center',
         }}
+        onSubmit={handleSubmit}
       >
         <InputBase
           sx={{ ml: 1, flex: 1 }}
           placeholder="Input"
+          value={messageInput}
+          onChange={(event) => setMessageInput(event.target.value)}
           inputProps={{ 'aria-label': 'search google maps' }}
         />
         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-        <IconButton color="primary" sx={{ p: '10px' }} aria-label="directions"  onClick={() => sendMessage()}>
+        <IconButton
+          color="primary"
+          sx={{ p: '10px' }}
+          aria-label="directions"
+          type="submit"
+        >
           <SendIcon />
         </IconButton>
       </Paper>
