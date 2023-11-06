@@ -20,7 +20,7 @@ module.exports = {
     node: true,
     jest: true,
   },
-  ignorePatterns: ['.eslintrc.js', '/prisma/*'],
+  ignorePatterns: ['.eslintrc.js', '/prisma/*', '.server.js'],
   rules: {
     'simple-import-sort/imports': 'error',
     'simple-import-sort/exports': 'error',

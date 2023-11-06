@@ -1,11 +1,34 @@
 import SendIcon from '@mui/icons-material/Send';
-import { Divider, IconButton, InputBase, Paper } from '@mui/material';
+import { Button, Divider, IconButton, InputBase, Paper } from '@mui/material';
 import Container from '@mui/material/Container';
+import { useEffect, useState } from 'react';
 
 import { MessageLeft } from '../Message/MessageLeft';
 import { MessageRight } from '../Message/MessageRight';
 
 export const Conversation = () => {
+  const [messages, setMessages] = useState([]);
+  const [messageInput, setMessageInput] = useState('');
+  const socket = new WebSocket('ws://localhost:3001');
+
+  useEffect(() => {
+    socket.onopen = () => {
+      console.log('WebSocket connection established.');
+    };
+
+    socket.onmessage = (event) => {
+      console.log(event.data);
+    };
+
+    return () => {
+      socket.close();
+    };
+  }, []);
+
+  const sendMessage = () => { 
+    socket.send(JSON.stringify('hjh'));
+  };
+
   return (
     <Container component="main" maxWidth="sm">
       <Paper
@@ -32,7 +55,7 @@ export const Conversation = () => {
           inputProps={{ 'aria-label': 'search google maps' }}
         />
         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-        <IconButton color="primary" sx={{ p: '10px' }} aria-label="directions">
+        <IconButton color="primary" sx={{ p: '10px' }} aria-label="directions"  onClick={() => sendMessage()}>
           <SendIcon />
         </IconButton>
       </Paper>
