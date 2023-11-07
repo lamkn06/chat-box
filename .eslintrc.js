@@ -11,6 +11,7 @@ module.exports = {
     'prettier',
   ],
   extends: [
+    'plugin:cypress/recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',    
     'prettier',
@@ -20,7 +21,7 @@ module.exports = {
     node: true,
     jest: true,
   },
-  ignorePatterns: ['.eslintrc.js', '/prisma/*', '.server.js'],
+  ignorePatterns: ['.eslintrc.js', '.server.js', '/cypress/*'],
   rules: {
     'simple-import-sort/imports': 'error',
     'simple-import-sort/exports': 'error',
@@ -30,4 +31,7 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'off',
     'prettier/prettier': 'error',
   },
+  globals: {
+    cy: true
+  }
 };

@@ -1,7 +1,7 @@
 import './App.css';
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Conversation } from './components/Conversation/Conversation';

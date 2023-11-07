@@ -1,6 +1,13 @@
 import SendIcon from '@mui/icons-material/Send';
-import { Divider, IconButton, InputBase, Paper } from '@mui/material';
+import {
+  Divider,
+  IconButton,
+  InputBase,
+  Paper,
+  useScrollTrigger,
+} from '@mui/material';
 import Container from '@mui/material/Container';
+import Slide from '@mui/material/Slide';
 import { useEffect, useRef, useState } from 'react';
 
 import { MessageLeft } from '../Message/MessageLeft';
@@ -12,6 +19,10 @@ interface Props {
 }
 
 export const Conversation = (props: Props) => {
+  const trigger = useScrollTrigger({
+    target: window,
+  });
+
   const [messages, setMessages] = useState([]);
   const [messageInput, setMessageInput] = useState('');
 
@@ -63,30 +74,34 @@ export const Conversation = (props: Props) => {
           padding: 3,
           borderRadius: 2,
           marginBottom: 2,
+          maxHeight: '70vh',
+          overflowY: 'auto',
         }}
       >
         {messages.length > 0 && (
-          <>
-            {messages.map((message: any) => {
-              if (message.uuid === props.uuid) {
-                return (
-                  <MessageRight
-                    message={message.message}
-                    name={message.name}
-                    key={message.timestamp}
-                  />
-                );
-              } else {
-                return (
-                  <MessageLeft
-                    message={message.message}
-                    name={message.name}
-                    key={message.timestamp}
-                  />
-                );
-              }
-            })}
-          </>
+          <Slide appear={true} direction="down" in={trigger}>
+            <>
+              {messages.map((message: any) => {
+                if (message.uuid === props.uuid) {
+                  return (
+                    <MessageRight
+                      message={message.message}
+                      name={message.name}
+                      key={message.timestamp}
+                    />
+                  );
+                } else {
+                  return (
+                    <MessageLeft
+                      message={message.message}
+                      name={message.name}
+                      key={message.timestamp}
+                    />
+                  );
+                }
+              })}
+            </>
+          </Slide>
         )}
       </Paper>
       <Paper
